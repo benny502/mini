@@ -1,0 +1,13 @@
+{
+    "name": "benny/mini",
+    "description": "mini frame",
+    "type": "project",
+    "authors": [
+        {
+            "name": "benny502",
+            "email": "benny502@126.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
