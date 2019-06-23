@@ -17,7 +17,7 @@
     "autoload": {
         "psr-4": {
             "App\\": "app/",
-            "Mini\\": "library/"
+            "Mini\\": "frame/"
         },
         "files": [
             "library/Core/helpers.php"

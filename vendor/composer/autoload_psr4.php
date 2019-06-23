@@ -10,6 +10,6 @@ return array(
     'Symfony\\Polyfill\\Ctype\\' => array($vendorDir . '/symfony/polyfill-ctype'),
     'Symfony\\Component\\Yaml\\' => array($vendorDir . '/symfony/yaml'),
     'Noodlehaus\\' => array($vendorDir . '/hassankhan/config/src'),
-    'Mini\\' => array($baseDir . '/library'),
+    'Mini\\' => array($baseDir . '/frame'),
     'App\\' => array($baseDir . '/app'),
 );

@@ -54,7 +54,7 @@ class ComposerStaticInit966587f4bab15c239083d7e8b8f0570f
         ),
         'Mini\\' => 
         array (
-            0 => __DIR__ . '/../..' . '/library',
+            0 => __DIR__ . '/../..' . '/frame',
         ),
         'App\\' => 
         array (
