@@ -16,7 +16,7 @@ class Container{
 
     private $abstractAliases;
 
-    private static $instance;
+    protected static $instance;
 
 
 
@@ -24,15 +24,19 @@ class Container{
     {
     }
 
-    public function getInstance() 
+    public static function getInstance() 
     {
-        if(is_null(self::$instance)) {
-            self::$instance = new static;
+        if(is_null(static::$instance)) {
+            static::$instance = new static;
         }
-        return self::$instance;
+        return static::$instance;
     }
 
-    public function bind($abstract, $concrete = null){
+    public static function setInstance(Container $instance) {
+        return static::$instance = $instance;
+    }
+
+    public function bind($abstract, $concrete = null, $shared = false){
         $this->dropStaleInstances($abstract);
 
         if (is_null($concrete)) {
@@ -44,7 +48,7 @@ class Container{
             $concrete = $this->getClosure($abstract, $concrete);
         }
 
-        $this->bindings[$abstract] = compact('concrete');
+        $this->bindings[$abstract] = compact('concrete', 'shared');
     }
 
 
@@ -135,10 +139,27 @@ class Container{
             $object = $this->make($concrete);
         }
 
+        // 如果是单例模式，放入实例列表
+        if ($this->isShared($abstract)) {
+            $this->instances[$abstract] = $object;
+        }
+
         array_pop($this->with);
 
         return $object;
 
+    }
+
+    /**
+     * Register a shared binding in the container.
+     *
+     * @param  string  $abstract
+     * @param  \Closure|string|null  $concrete
+     * @return void
+     */
+    public function singleton($abstract, $concrete = null)
+    {
+        $this->bind($abstract, $concrete, true);
     }
 
     protected function getConcrete($abstract)
@@ -404,6 +425,19 @@ class Container{
     public function has($id)
     {
         return $this->bound($id);
+    }
+
+    /**
+     * Determine if a given type is shared.
+     *
+     * @param  string  $abstract
+     * @return bool
+     */
+    public function isShared($abstract)
+    {
+        return isset($this->instances[$abstract]) ||
+               (isset($this->bindings[$abstract]['shared']) &&
+               $this->bindings[$abstract]['shared'] === true);
     }
 
 }

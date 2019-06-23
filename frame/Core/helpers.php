@@ -11,6 +11,7 @@ if(!function_exists('container')) {
     }
 }
 
+
 if(!function_exists('config_path')) {
     function config_path() {
         return Container::getInstance()->make('path.config');

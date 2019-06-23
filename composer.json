@@ -20,7 +20,7 @@
             "Mini\\": "frame/"
         },
         "files": [
-            "library/Core/helpers.php"
+            "frame/Core/helpers.php"
         ]
     },
     "autoload-dev": {
