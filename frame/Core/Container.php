@@ -1,6 +1,8 @@
 <?php
 
 namespace Mini\Core;
+use Mini\Contracts\ApplicationAware;
+use Mini\Application;
 
 class Container{
 
@@ -203,7 +205,7 @@ class Container{
     }
 
 
-    public function build($concrete) {
+    public function build($concrete) {        
 
         //如果是实现是一个闭包函数，返回闭包函数
         if ($concrete instanceof \Closure) {
@@ -224,7 +226,11 @@ class Container{
         if (is_null($constructor)) {
             array_pop($this->buildStack);
         
-            return new $concrete;
+            $instance = new $concrete;
+            
+            $this->injectApplication($instance);
+
+            return $instance;
         }
 
         //否则解析依赖
@@ -235,8 +241,18 @@ class Container{
         array_pop($this->buildStack);
 
         //用依赖构建实例
-        return $reflector->newInstanceArgs($instances);
+        $instance = $reflector->newInstanceArgs($instances);
 
+        $this->injectApplication($instance);
+
+        return $instance;
+    }
+
+    protected function injectApplication($instance) 
+    {
+        if($instance instanceof ApplicationAware) {
+            $instance->setApplication($this->make('app'));
+        }
     }
 
     /**

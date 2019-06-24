@@ -3,7 +3,7 @@
 namespace Mini;
 
 use Mini\Core\Container;
-use Mini\Contracts\ConfigInterface;
+use Mini\Contracts\Config;
 
 class Application extends Container {
 
@@ -21,6 +21,7 @@ class Application extends Container {
         static::setInstance($this);
         $this->config = $this->loadConfig();
         $this->registerInstance();
+        $this->registerServices();
     }
 
 
@@ -30,12 +31,19 @@ class Application extends Container {
         $this->instance("path.config", $this->configPath());
         $this->instance("config", $this->config);
         $this->instance("app", $this);
-        $this->instance("Container", $this);
+    }
+
+    protected function registerServices() 
+    {
+        $serviceConfigs = $this->config->get("services.configs");
+        foreach($serviceConfigs as $config) {
+            $this->make($config)->register();
+        }
     }
 
     protected function loadConfig() 
     {
-        return $this->make(ConfigInterface::class, ["basepath" => $this->configPath()]);
+        return $this->make(Config::class, ["basePath" => $this->configPath()]);
     }
 
     public function basePath() 

@@ -1,7 +1,7 @@
 <?php
 namespace Mini\Contracts;
 
-interface ConfigInterface {
+interface Config {
 
     public function get(string $config);
 

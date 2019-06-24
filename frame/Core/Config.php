@@ -2,17 +2,18 @@
 
 namespace Mini\Core;
 use Noodlehaus\Config as ConfigLoader;
-use Mini\Contracts\ConfigInterface;
+use Mini\Contracts\Config as ConfigInterface;
 
 class Config implements ConfigInterface
 {
 
-    protected $basepath;
-    protected $extentions = '.yml';
+    protected $basePath;
+    protected $extentions;
 
-    public function __construct($basepath)
+    public function __construct($basePath, $extentions = '.yml')
     {   
-       $this->basepath = $basepath; 
+       $this->basePath = $basePath; 
+       $this->extentions = $extentions;
     }
 
     public function get(string $abstact) 
@@ -34,7 +35,7 @@ class Config implements ConfigInterface
 
     protected function realPath($filename) 
     {
-        return $this->basepath.DIRECTORY_SEPARATOR.$filename.$this->extentions;
+        return $this->basePath.DIRECTORY_SEPARATOR.$filename.$this->extentions;
     }
 
 }
