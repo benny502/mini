@@ -3,7 +3,19 @@
 namespace Mini;
 
 use Mini\Core\Container;
-use Mini\Contracts\Config;
+use Symfony\Component\HttpFoundation\Request;
+use Mini\Contract\ConfigInterface;
+use Mini\Contract\KernelInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\HttpKernel\Controller\ControllerResolver;
+use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpKernel\HttpKernel;
+use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
+use Symfony\Component\Routing\RequestContext;
+use Symfony\Component\Routing\Matcher\UrlMatcher;
+use Mini\Contract\RouteLoaderInterface;
+use Mini\Core\Pipeline;
 
 class Application extends Container {
 
@@ -22,8 +34,43 @@ class Application extends Container {
         $this->config = $this->loadConfig();
         $this->registerInstance();
         $this->registerServices();
+
+        $request = Request::createFromGlobals();
+
+
+        
+        // $context = new RequestContext();
+        // $context->fromRequest($request);
+        // $matcher = new UrlMatcher($routes, $context);
+
+        // $request->attributes->add($matcher->match($request->getPathInfo()));
+
+        // $dispatcher = new EventDispatcher();
+
+        // $controllerResolver = $this->make(ControllerResolverInterface::class);
+        // $argumentResolver = new ArgumentResolver();
+
+        $this->sendRequestThroughRoute($request);
+        
+
+        //$kernel = new HttpKernel($dispatcher, $controllerResolver, new RequestStack(), $argumentResolver);
+        
+
+        //$response = $kernel->handle($request);
+        
+        //$response->send();
+        
+        //$kernel->terminate($request, $response);
     }
 
+    protected function sendRequestThroughRoute($request) 
+    {
+        $pipline = new Pipeline($this);
+        $pipline->send($request)
+            ->through([])->then(function() {
+
+            });
+    }
 
     protected function registerInstance() 
     {
@@ -43,7 +90,7 @@ class Application extends Container {
 
     protected function loadConfig() 
     {
-        return $this->make(Config::class, ["basePath" => $this->configPath()]);
+        return $this->make(ConfigInterface::class, ["basePath" => $this->configPath()]);
     }
 
     public function basePath() 

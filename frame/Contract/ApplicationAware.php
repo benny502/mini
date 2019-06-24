@@ -1,5 +1,5 @@
 <?php
-namespace Mini\Contracts;
+namespace Mini\Contract;
 
 interface ApplicationAware {
 

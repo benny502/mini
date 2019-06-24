@@ -1,0 +1,3 @@
+route1:
+  path: /abc
+  defaults: { _controller: 'App\Controllers\DefaultController::index' }

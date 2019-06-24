@@ -1,6 +1,7 @@
 <?php
 use Mini\Core\Container;
-use Mini\Contracts\ConfigInterface;
+use Mini\Contract\Config;
+use Mini\Contract\ConfigInterface;
 
 if(!function_exists('container')) {
     function container($abstract = null, $parameters = null) {
@@ -20,6 +21,6 @@ if(!function_exists('config_path')) {
 
 if(!function_exists('config')) {
     function config($abstract) {
-        return Container::getInstance()->make(ConfigInterface::class, config_path())->get($abstract);
+        return Container::getInstance()->make(ConfigInterfaces::class, config_path())->get($abstract);
     }
 }

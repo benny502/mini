@@ -1,8 +1,8 @@
 <?php
 
 namespace Mini\Core;
-use Mini\Contracts\ApplicationAware;
-use Mini\Application;
+use Mini\Contract\ApplicationAware;
+use Mini\Exception\BindingResolutionException;
 
 class Container{
 
@@ -271,7 +271,7 @@ class Container{
      * @param  string  $concrete
      * @return void
      *
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     * @throws \Mini\Exception\BindingResolutionException
      */
     protected function notInstantiable($concrete)
     {
@@ -283,7 +283,7 @@ class Container{
             $message = "Target [$concrete] is not instantiable.";
         }
 
-        throw new \Exception($message);
+        throw new BindingResolutionException($message);
     }
 
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace Mini\Core;
+namespace Mini\Config;
 use Noodlehaus\Config as ConfigLoader;
-use Mini\Contracts\Config as ConfigInterface;
+use Mini\Contract\ConfigInterface;
 
 class Config implements ConfigInterface
 {
@@ -22,8 +22,11 @@ class Config implements ConfigInterface
             $stack = explode('.', $abstact);
             $filename = array_shift($stack);
             $config = $this->loadConfigFile($filename);
-            $parameter = join('.', $stack);
-            return $config->get($parameter);
+            if(count($stack) > 0) {
+                $parameter = join('.', $stack);
+                return $config->get($parameter);
+            }
+            return $config->all();
         }
         return null;
     }

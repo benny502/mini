@@ -44,7 +44,7 @@ class Pipeline {
     } 
 
 
-    public function then(Closure $destination) {
+    public function then(\Closure $destination) {
         //通过array_reduce方法把pips压缩成闭包栈：
         //return function($passable) {
         //     return $pip1->handle($passable, function($passable) {
