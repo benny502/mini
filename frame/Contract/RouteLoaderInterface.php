@@ -2,7 +2,9 @@
 
 namespace Mini\Contract;
 
+use Symfony\Component\Routing\RouteCollection;
+
 interface RouteLoaderInterface 
 {
-    public function all();
+    public function load() : RouteCollection;
 }

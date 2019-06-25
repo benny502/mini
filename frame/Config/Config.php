@@ -16,7 +16,7 @@ class Config implements ConfigInterface
        $this->extentions = $extentions;
     }
 
-    public function get(string $abstact) 
+    public function load(string $abstact) 
     {
         if(!is_null($abstact) && is_string($abstact) && !empty($abstact)) {
             $stack = explode('.', $abstact);

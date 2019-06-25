@@ -3,6 +3,6 @@ namespace Mini\Contract;
 
 interface ConfigInterface {
 
-    public function get(string $config);
+    public function load(string $config);
 
 }

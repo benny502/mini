@@ -5,17 +5,7 @@ namespace Mini;
 use Mini\Core\Container;
 use Symfony\Component\HttpFoundation\Request;
 use Mini\Contract\ConfigInterface;
-use Mini\Contract\KernelInterface;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Symfony\Component\HttpKernel\Controller\ControllerResolver;
-use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
-use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpKernel\HttpKernel;
-use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
-use Symfony\Component\Routing\RequestContext;
-use Symfony\Component\Routing\Matcher\UrlMatcher;
-use Mini\Contract\RouteLoaderInterface;
-use Mini\Core\Pipeline;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 class Application extends Container {
 
@@ -37,52 +27,27 @@ class Application extends Container {
 
         $request = Request::createFromGlobals();
 
+        $kernel  = $this->make(HttpKernelInterface::class);
 
+        $response = $kernel->handle($request);
         
-        // $context = new RequestContext();
-        // $context->fromRequest($request);
-        // $matcher = new UrlMatcher($routes, $context);
-
-        // $request->attributes->add($matcher->match($request->getPathInfo()));
-
-        // $dispatcher = new EventDispatcher();
-
-        // $controllerResolver = $this->make(ControllerResolverInterface::class);
-        // $argumentResolver = new ArgumentResolver();
-
-        $this->sendRequestThroughRoute($request);
+        $response->send();
         
-
-        //$kernel = new HttpKernel($dispatcher, $controllerResolver, new RequestStack(), $argumentResolver);
-        
-
-        //$response = $kernel->handle($request);
-        
-        //$response->send();
-        
-        //$kernel->terminate($request, $response);
-    }
-
-    protected function sendRequestThroughRoute($request) 
-    {
-        $pipline = new Pipeline($this);
-        $pipline->send($request)
-            ->through([])->then(function() {
-
-            });
+        $kernel->terminate($request, $response);
     }
 
     protected function registerInstance() 
     {
         $this->instance("path", $this->basePath());
         $this->instance("path.config", $this->configPath());
+        $this->instance("path.app", $this->appPath());
         $this->instance("config", $this->config);
         $this->instance("app", $this);
     }
 
     protected function registerServices() 
     {
-        $serviceConfigs = $this->config->get("services.configs");
+        $serviceConfigs = $this->config->load("services.configs");
         foreach($serviceConfigs as $config) {
             $this->make($config)->register();
         }
@@ -100,7 +65,16 @@ class Application extends Container {
 
     public function configPath() 
     {
-        return $this->basePath.'config';
+        return $this->basePath."config";
+    }
+
+    public function appPath() {
+        return $this->basePath."app";
+    }
+
+    public function config($abstract) 
+    {
+        return $this->config->load($abstract);
     }
 
 

@@ -2,32 +2,43 @@
 
 namespace Mini\Http;
 
-use Mini\Contract\KernelInterface;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
-use Symfony\Component\Routing\Route;
-use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\HttpFoundation\Request;
 use Mini\Contract\RouteLoaderInterface;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\HttpKernel\HttpKernel;
 
-class Kernel implements KernelInterface
+class Kernel implements HttpKernelInterface
 {
 
     protected $routeLoader;
 
-    public function __construct(RouteLoaderInterface $routeLoader)
+    protected $controllerResolver;
+
+    protected $argumentResolver;
+
+    protected $httpKernel;
+
+    public function __construct(HttpKernel $httpKernel, RouteLoaderInterface $routeLoader)
     {
         $this->routeLoader = $routeLoader;
+        $this->httpKernel = $httpKernel;
     }
 
-    public function handle(Request $request)
+    public function handle(Request $request, $type = self::MASTER_REQUEST, $catch = true)
     {
 
-        $routes = $this->routeLoader->all();
-        
+        $routes = $this->routeLoader->load();
         $context = new RequestContext();
         $context->fromRequest($request);
         $matcher = new UrlMatcher($routes, $context);
-        var_dump($matcher->matchRequest($request));
+        $request->attributes->add($matcher->matchRequest($request));
+        return $this->httpKernel->handle($request, $type, $catch);
+    }
+
+    protected function sendRequestThroughRoute($request) 
+    {
+
     }
 }

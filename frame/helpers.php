@@ -21,6 +21,6 @@ if(!function_exists('config_path')) {
 
 if(!function_exists('config')) {
     function config($abstract) {
-        return Container::getInstance()->make(ConfigInterfaces::class, config_path())->get($abstract);
+        return Container::getInstance()->make(ConfigInterfaces::class, config_path())->load($abstract);
     }
 }
