@@ -1,7 +1,7 @@
 <?php
 namespace Mini\Contract;
 
-interface ConfigInterface {
+interface ConfigLoaderInterface {
 
     public function load(string $config);
 

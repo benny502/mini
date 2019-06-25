@@ -1,10 +1,10 @@
 <?php
 
 namespace Mini\Config;
-use Noodlehaus\Config as ConfigLoader;
-use Mini\Contract\ConfigInterface;
+use Noodlehaus\Config;
+use Mini\Contract\ConfigLoaderInterface;
 
-class Config implements ConfigInterface
+class ConfigLoader implements ConfigLoaderInterface
 {
 
     protected $basePath;
@@ -33,7 +33,7 @@ class Config implements ConfigInterface
 
     protected function loadConfigFile($filename) 
     {
-        return ConfigLoader::load($this->realPath($filename));
+        return Config::load($this->realPath($filename));
     }
 
     protected function realPath($filename) 

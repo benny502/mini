@@ -4,24 +4,24 @@ namespace Mini;
 
 use Mini\Core\Container;
 use Symfony\Component\HttpFoundation\Request;
-use Mini\Contract\ConfigInterface;
+use Mini\Contract\ConfigLoaderInterface;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 class Application extends Container {
 
     protected $basePath;
 
-    protected $config;
+    protected $loader;
 
-    public function __construct($basePath)
+    public function __construct(ConfigLoaderInterface $loader)
     {
-        $this->basePath = $basePath;
+        $this->basePath = __DIR__."/../";
+        $this->loader = $loader;
     }
 
     public function start() 
     {
         static::setInstance($this);
-        $this->config = $this->loadConfig();
         $this->registerInstance();
         $this->registerServices();
 
@@ -41,21 +41,15 @@ class Application extends Container {
         $this->instance("path", $this->basePath());
         $this->instance("path.config", $this->configPath());
         $this->instance("path.app", $this->appPath());
-        $this->instance("config", $this->config);
         $this->instance("app", $this);
     }
 
     protected function registerServices() 
     {
-        $serviceConfigs = $this->config->load("services.configs");
+        $serviceConfigs = $this->loader->load("services.configs");
         foreach($serviceConfigs as $config) {
             $this->make($config)->register();
         }
-    }
-
-    protected function loadConfig() 
-    {
-        return $this->make(ConfigInterface::class, ["basePath" => $this->configPath()]);
     }
 
     public function basePath() 
@@ -74,7 +68,7 @@ class Application extends Container {
 
     public function config($abstract) 
     {
-        return $this->config->load($abstract);
+        return $this->loader->load($abstract);
     }
 
 

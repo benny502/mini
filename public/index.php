@@ -2,8 +2,12 @@
 
 require __DIR__."/../vendor/autoload.php";
 
-$app = new Mini\Application(__DIR__."/../");
+$container = Mini\Core\Container::getInstance();
 
-$app->bind(Mini\Contract\ConfigInterface::class, Mini\Config\Config::class);
+$container->bind(Mini\Contract\ConfigLoaderInterface::class, function() {
+    return new Mini\Config\ConfigLoader(__DIR__."/../config/");
+});
+
+$app = $container->make(Mini\Application::class);
 
 $app->start();
