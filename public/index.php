@@ -8,6 +8,6 @@ $container->bind(Mini\Contract\ConfigLoaderInterface::class, function() {
     return new Mini\Config\ConfigLoader(__DIR__."/../config/");
 });
 
-$app = $container->make(Mini\Application::class);
+$app = $container->make(Mini\Application::class, ["basePath" => __DIR__. "/../"]);
 
 $app->start();

@@ -13,9 +13,9 @@ class Application extends Container {
 
     protected $loader;
 
-    public function __construct(ConfigLoaderInterface $loader)
+    public function __construct($basePath, ConfigLoaderInterface $loader)
     {
-        $this->basePath = __DIR__."/../";
+        $this->basePath = $basePath;
         $this->loader = $loader;
     }
 
