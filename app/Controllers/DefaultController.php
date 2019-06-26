@@ -8,10 +8,10 @@ use Symfony\Component\Routing\Annotation\Route;
 class DefaultController {
 
     /**
-     * @Route("/abc")
+     * @Route("/abc/{name}", methods="GET")
      */
-    public function index(Request $request) {
-        var_dump($request->query->all());
+    public function index(Request $request, $name) {
+        var_dump($name);
         return new Response("hello");
     }
 }

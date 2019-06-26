@@ -17,7 +17,7 @@ class RouteLoader implements RouteLoaderInterface, ApplicationAware
     public function load() : RouteCollection
     {
 
-        $loaders = $this->app->config("app.router.loader");
+        $loaders = $this->getLoaders();
         $collection = new RouteCollection;
         foreach($loaders as $loader) 
         {
@@ -25,6 +25,20 @@ class RouteLoader implements RouteLoaderInterface, ApplicationAware
             $collection->addCollection($instance->load($loader['resource']));
         }
         return $collection;
+    }
+
+    protected function getLoaders() 
+    {    
+        return [
+            [
+                "method"    =>  "router.loader.annotation",
+                "resource"  =>  $this->app->basePath().DIRECTORY_SEPARATOR."app",
+            ],
+            [
+                "method"    =>  "router.loader.file",
+                "resource"  =>  "routes.yml",
+            ],
+        ];
     }
 
 }

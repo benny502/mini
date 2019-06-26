@@ -1,6 +1,1 @@
 enviroment: dev
-
-router:
-  loader:
-    - { method: "router.loader.annotation", resource: "/home/benny/code/frame/public/../app" }
-    - { method: "router.loader.file", resource: "routes.yml" } 
