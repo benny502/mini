@@ -2,15 +2,18 @@
 
 namespace Mini\Http;
 
-use Symfony\Component\Routing\RequestContext;
-use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\HttpFoundation\Request;
-use Mini\Contract\RouteLoaderInterface;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Mini\Contract\KernelInterface;
 use Symfony\Component\HttpKernel\HttpKernel;
+use Mini\Contract\ConfigLoaderInterface;
+use Mini\Contract\ApplicationAware;
+use Mini\Contract\ApplicationAwareTrait;
+use Mini\Core\Pipeline;
+use Mini\Router\Dispatcher;
 
-class Kernel implements HttpKernelInterface
+class Kernel implements KernelInterface, ApplicationAware
 {
+    use ApplicationAwareTrait;
 
     protected $routeLoader;
 
@@ -20,25 +23,56 @@ class Kernel implements HttpKernelInterface
 
     protected $httpKernel;
 
-    public function __construct(HttpKernel $httpKernel, RouteLoaderInterface $routeLoader)
+    protected $configLoader;
+
+    protected $pipline;
+
+    protected $middleware = [];
+
+    protected $routeMiddleware = [];
+
+    protected $groupMiddleware = [];
+
+    public function __construct(ConfigLoaderInterface $configLoader, Pipeline $pipeline)
     {
-        $this->routeLoader = $routeLoader;
-        $this->httpKernel = $httpKernel;
+        $this->configLoader = $configLoader;
+        $this->pipline = $pipeline;
     }
 
     public function handle(Request $request, $type = self::MASTER_REQUEST, $catch = true)
     {
-
-        $routes = $this->routeLoader->load();
-        $context = new RequestContext();
-        $context->fromRequest($request);
-        $matcher = new UrlMatcher($routes, $context);
-        $request->attributes->add($matcher->matchRequest($request));
-        return $this->httpKernel->handle($request, $type, $catch);
+        $this->registerConfiguredsServices();
+        $request = $this->sendRequestThroughRouter($request);
+        return $this->getHttpKernel()->handle($request, $type, $catch);
     }
 
-    protected function sendRequestThroughRoute($request) 
+    protected function registerConfiguredsServices() {
+        $serviceConfigs = $this->configLoader->load("services.configs");
+        foreach($serviceConfigs as $config) {
+            $this->app->make($config)->register();
+        }
+    }
+
+    protected function sendRequestThroughRouter($request) 
     {
-
+        return $this->pipline->send($request)->through($this->middleware)
+            ->then($this->dispatchToRouter());
     }
+
+    protected function dispatchToRouter() 
+    {
+        return function($request) {
+            $dispatcher = $this->app->make(Dispatcher::class);
+            $dispatcher->setGroupMiddleware($this->groupMiddleware);
+            $dispatcher->setRouteMiddleware($this->routeMiddleware);
+            return $dispatcher->dispatch($request);
+        };
+    }
+
+
+    protected function getHttpKernel() 
+    {
+        return $this->app->make(HttpKernel::class);
+    }
+
 }

@@ -2,17 +2,16 @@
 
 namespace Mini\Core;
 
-use Mini\Core\Container;
-class Pipeline {
+use Mini\Contract\ApplicationAware;
+use Mini\Contract\ApplicationAwareTrait;
+
+class Pipeline implements ApplicationAware {
+
+    use ApplicationAwareTrait;
 
     protected $passable;
 
     protected $pips = [];
-
-    public function __construct(Container $container)
-    {
-        $this->app = $container;
-    }
 
 
     public function send($passable) {

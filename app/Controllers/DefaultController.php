@@ -3,15 +3,15 @@ namespace App\Controllers;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Mini\Router\Route;
 
 class DefaultController {
 
     /**
-     * @Route("/abc/{name}", methods="GET")
+     * @Route("/abc/{name}", methods="GET", middleware="jwt", group="web")
      */
-    public function index(Request $request, $name) {
-        var_dump($name);
+    public function index(Request $request) {
+        //var_dump($name);
         return new Response("hello");
     }
 }

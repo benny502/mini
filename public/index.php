@@ -2,12 +2,18 @@
 
 require __DIR__."/../vendor/autoload.php";
 
-$container = Mini\Core\Container::getInstance();
+$app = new Mini\Application(__DIR__. "/../");
 
-$container->bind(Mini\Contract\ConfigLoaderInterface::class, function() {
-    return new Mini\Config\ConfigLoader(__DIR__."/../config/");
-});
+$app->singleton(Mini\Contract\KernelInterface::class, Mini\Http\Kernel::class);
 
-$app = $container->make(Mini\Application::class, ["basePath" => __DIR__. "/../"]);
+$app->singleton(Mini\Contract\ConfigLoaderInterface::class, Mini\Config\ConfigLoader::class);
 
-$app->start();
+$kernel = $app->make(Mini\Contract\KernelInterface::class);
+
+$response = $kernel->handle(
+    Symfony\Component\HttpFoundation\Request::createFromGlobals()
+);
+
+$response->send();
+
+$kernel->terminate($request, $response);

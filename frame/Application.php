@@ -1,11 +1,8 @@
 <?php
 
 namespace Mini;
-
-use Mini\Core\Container;
-use Symfony\Component\HttpFoundation\Request;
-use Mini\Contract\ConfigLoaderInterface;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Illuminate\Container\Container;
+use Mini\Contract\ApplicationAware;
 
 class Application extends Container {
 
@@ -13,27 +10,20 @@ class Application extends Container {
 
     protected $loader;
 
-    public function __construct($basePath, ConfigLoaderInterface $loader)
-    {
-        $this->basePath = $basePath;
-        $this->loader = $loader;
-    }
-
-    public function start() 
+    public function __construct($basePath)
     {
         static::setInstance($this);
+        $this->basePath = $basePath;
         $this->registerInstance();
-        $this->registerServices();
+    }
 
-        $request = Request::createFromGlobals();
-
-        $kernel  = $this->make(HttpKernelInterface::class);
-
-        $response = $kernel->handle($request);
-        
-        $response->send();
-        
-        $kernel->terminate($request, $response);
+    public function make($abstract, array $parameters = [])
+    {
+        $object = parent::make($abstract, $parameters);
+        if($object instanceof ApplicationAware) {
+            $object->setApplication($this);
+        }
+        return $object;
     }
 
     protected function registerInstance() 
@@ -42,14 +32,6 @@ class Application extends Container {
         $this->instance("path.config", $this->configPath());
         $this->instance("path.app", $this->appPath());
         $this->instance("app", $this);
-    }
-
-    protected function registerServices() 
-    {
-        $serviceConfigs = $this->loader->load("services.configs");
-        foreach($serviceConfigs as $config) {
-            $this->make($config)->register();
-        }
     }
 
     public function basePath() 
@@ -65,11 +47,5 @@ class Application extends Container {
     public function appPath() {
         return $this->basePath."app";
     }
-
-    public function config($abstract) 
-    {
-        return $this->loader->load($abstract);
-    }
-
 
 }

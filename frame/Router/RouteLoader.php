@@ -16,7 +16,6 @@ class RouteLoader implements RouteLoaderInterface, ApplicationAware
      */
     public function load() : RouteCollection
     {
-
         $loaders = $this->getLoaders();
         $collection = new RouteCollection;
         foreach($loaders as $loader) 

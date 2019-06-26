@@ -3,17 +3,28 @@
 namespace Mini\Config;
 use Noodlehaus\Config;
 use Mini\Contract\ConfigLoaderInterface;
+use Mini\Contract\ApplicationAware;
+use Mini\Contract\ApplicationAwareTrait;
 
-class ConfigLoader implements ConfigLoaderInterface
+class ConfigLoader implements ConfigLoaderInterface, ApplicationAware
 {
+    use ApplicationAwareTrait;
 
-    protected $basePath;
-    protected $extentions;
+    protected $extention = "yml";
 
-    public function __construct($basePath, $extentions = '.yml')
-    {   
-       $this->basePath = $basePath; 
-       $this->extentions = $extentions;
+    public function setExtension(string $extention)
+    {
+        $this->extention = $extention;
+    }
+
+    public function getExtension() 
+    {
+        return $this->extention;
+    }
+
+    public function support() 
+    {
+        return $this->extention;
     }
 
     public function load(string $abstact) 
@@ -38,7 +49,7 @@ class ConfigLoader implements ConfigLoaderInterface
 
     protected function realPath($filename) 
     {
-        return $this->basePath.DIRECTORY_SEPARATOR.$filename.$this->extentions;
+        return $this->app->configPath().DIRECTORY_SEPARATOR.$filename.".".$this->extention;
     }
 
 }

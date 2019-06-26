@@ -2,8 +2,6 @@
 
 namespace MIni\Router;
 
-use Mini\Contract\ApplicationAware;
-use Mini\Contract\ApplicationAwareTrait;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Routing\Loader\AnnotationDirectoryLoader;
 use Symfony\Component\Routing\Loader\YamlFileLoader;
@@ -11,15 +9,12 @@ use Mini\Router\AnnotationClassLoader;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
+use Mini\Contract\Configuration;
 
-class RouterConfig implements ApplicationAware
+class RouterConfig extends Configuration
 {
-    use ApplicationAwareTrait;
-
     public function register() 
     {
-
-
         $this->app->bind("router.loader.file", function() {
             $locator = new FileLocator($this->app->make("path.config"));
             return new YamlFileLoader($locator);
