@@ -2,6 +2,7 @@ enviroment: dev
 
 middleware: ~
 
-groupMiddleware: ~
+groupMiddleware: 
+  web: ~
 
 routeMiddleware: ~

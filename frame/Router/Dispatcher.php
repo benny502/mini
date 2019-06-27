@@ -58,25 +58,36 @@ class Dispatcher implements ApplicationAware
 
     protected function gatheredMiddleware($request) 
     {
-        $groupMiddleware = is_null($request->attributes->get("_group")) ? [] : 
-                $this->gatheredGroupMiddleware($request);
-        $routeMiddleware = is_null($request->attributes->get("_middleware")) ? [] : 
-                $this->gatheredRouteMiddleware($request);
+        $groupMiddleware = $this->gatheredGroupMiddleware($request);
+        $routeMiddleware = $this->gatheredRouteMiddleware($request);
         return array_merge($groupMiddleware, $routeMiddleware);
     }
     
     protected function gatheredGroupMiddleware($request) 
     {
         $key = $request->attributes->get("_group");
+        if(is_null($key)) return [];
+        if(!is_array($this->groupMiddleware)) {
+            throw new \RuntimeException("groupMiddleware must be an array");
+        }
+        if(!array_key_exists($key, $this->groupMiddleware)) throw new \RuntimeException("groupMiddleware [$key] does not exist");
         if(isset($this->groupMiddleware[$key]) && !is_array($this->groupMiddleware[$key])) {
-            throw LogicException("groupMiddleware must be an array");
+            throw new \RuntimeException("groupMiddleware [$key] must be an array");
         }
         return $this->groupMiddleware[$key] ?? [];
     }
 
     protected function gatheredRouteMiddleware($request)
     {
-        return isset($this->routeMiddleware[$request->attributes->get("_middleware")]) ? 
-                [$this->routeMiddleware[$request->attributes->get("_middleware")]] : [];
+        $key = $request->attributes->get("_middleware");
+        if(is_null($key)) return [];
+        if(!is_array($this->routeMiddleware)) {
+            throw new \RuntimeException("routeMiddleware must be an array");
+        }
+        if(!array_key_exists($key, $this->routeMiddleware)) throw new \RuntimeException("routeMiddleware [$key] does not exist");
+        if(!isset($this->routeMiddleware[$key])) {
+            throw new \RuntimeException("routeMiddleware [$key] cannot be empty");
+        }
+        return [$this->routeMiddleware[$key]];
     }
 }

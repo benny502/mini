@@ -8,7 +8,7 @@ use Mini\Router\Route;
 class DefaultController {
 
     /**
-     * @Route("/abc/{name}", methods="GET", middleware="jwt", group="web")
+     * @Route("/abc/{name}", name="abc", methods="GET")
      */
     public function index(Request $request) {
         //var_dump($name);

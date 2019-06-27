@@ -10,10 +10,12 @@ class Application extends Container {
 
     protected $loader;
 
-    public function __construct($basePath)
+    public function __construct($basePath = "")
     {
         static::setInstance($this);
-        $this->basePath = $basePath;
+        if(!empty($basePath)) {
+            $this->basePath = $basePath;
+        }
         $this->registerInstance();
     }
 
