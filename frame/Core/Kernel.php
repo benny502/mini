@@ -10,6 +10,10 @@ use Mini\Contract\ApplicationAware;
 use Mini\Contract\ApplicationAwareTrait;
 use Mini\Core\Pipeline;
 use Mini\Router\Dispatcher;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Debug\ExceptionHandler;
+use Symfony\Component\Debug\ErrorHandler;
+use Symfony\Component\Debug\Debug;
 
 class Kernel implements KernelInterface, ApplicationAware
 {
@@ -42,6 +46,7 @@ class Kernel implements KernelInterface, ApplicationAware
     public function handle(Request $request, $type = self::MASTER_REQUEST, $catch = true)
     {
         $this->registerConfiguredsServices();
+        $this->loadExceptionHandle();
         $this->loadMiddleware();
         $request = $this->sendRequestThroughRouter($request);
         return $this->getHttpKernel()->handle($request, $type, $catch);
@@ -53,6 +58,11 @@ class Kernel implements KernelInterface, ApplicationAware
         foreach($serviceConfigs as $config) {
             $this->app->make($config)->register();
         }
+    }
+
+    protected function loadExceptionHandle() 
+    {
+        Debug::enable();
     }
 
     protected function loadMiddleware() 
