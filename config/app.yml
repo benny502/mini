@@ -1,1 +1,7 @@
 enviroment: dev
+
+middleware: ~
+
+groupMiddleware: ~
+
+routeMiddleware: ~

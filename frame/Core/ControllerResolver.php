@@ -1,6 +1,6 @@
 <?php
 
-namespace Mini\Http;
+namespace Mini\Core;
 
 use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
 use Symfony\Component\HttpFoundation\Request;

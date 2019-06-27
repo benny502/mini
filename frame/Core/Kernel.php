@@ -1,6 +1,6 @@
 <?php
 
-namespace Mini\Http;
+namespace Mini\Core;
 
 use Symfony\Component\HttpFoundation\Request;
 use Mini\Contract\KernelInterface;
@@ -42,15 +42,24 @@ class Kernel implements KernelInterface, ApplicationAware
     public function handle(Request $request, $type = self::MASTER_REQUEST, $catch = true)
     {
         $this->registerConfiguredsServices();
+        $this->loadMiddleware();
         $request = $this->sendRequestThroughRouter($request);
         return $this->getHttpKernel()->handle($request, $type, $catch);
     }
 
-    protected function registerConfiguredsServices() {
+    protected function registerConfiguredsServices() 
+    {
         $serviceConfigs = $this->configLoader->load("services.configs");
         foreach($serviceConfigs as $config) {
             $this->app->make($config)->register();
         }
+    }
+
+    protected function loadMiddleware() 
+    {
+        $this->middleware = $this->configLoader->load("app.middleware") ?? [];
+        $this->groupMiddleware = $this->configLoader->load("app.groupMiddleware") ?? [];
+        $this->routeMiddleware = $this->configLoader->load("app.routeMiddleware") ?? [];
     }
 
     protected function sendRequestThroughRouter($request) 
@@ -68,7 +77,6 @@ class Kernel implements KernelInterface, ApplicationAware
             return $dispatcher->dispatch($request);
         };
     }
-
 
     protected function getHttpKernel() 
     {

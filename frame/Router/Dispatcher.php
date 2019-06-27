@@ -7,7 +7,6 @@ use Mini\Contract\ApplicationAwareTrait;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext;
 use Mini\Core\Pipeline;
-use Illuminate\Support\Collection;
 
 class Dispatcher implements ApplicationAware
 {
@@ -51,11 +50,33 @@ class Dispatcher implements ApplicationAware
 
     protected function sendThroughMiddleware($request) 
     {   
-        $middleware = $this->gatheredMiddleware();
-        return $request;
+        $middleware = $this->gatheredMiddleware($request);
+        return $this->pipline->send($request)->through($middleware)->then(function($request) {
+            return $request;
+        });
     }
 
-    protected function gatheredMiddleware() {
-        //$collection = $this->
+    protected function gatheredMiddleware($request) 
+    {
+        $groupMiddleware = is_null($request->attributes->get("_group")) ? [] : 
+                $this->gatheredGroupMiddleware($request);
+        $routeMiddleware = is_null($request->attributes->get("_middleware")) ? [] : 
+                $this->gatheredRouteMiddleware($request);
+        return array_merge($groupMiddleware, $routeMiddleware);
+    }
+    
+    protected function gatheredGroupMiddleware($request) 
+    {
+        $key = $request->attributes->get("_group");
+        if(isset($this->groupMiddleware[$key]) && !is_array($this->groupMiddleware[$key])) {
+            throw LogicException("groupMiddleware must be an array");
+        }
+        return $this->groupMiddleware[$key] ?? [];
+    }
+
+    protected function gatheredRouteMiddleware($request)
+    {
+        return isset($this->routeMiddleware[$request->attributes->get("_middleware")]) ? 
+                [$this->routeMiddleware[$request->attributes->get("_middleware")]] : [];
     }
 }
