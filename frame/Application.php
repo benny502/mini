@@ -1,10 +1,12 @@
 <?php
 
 namespace Mini;
+
 use Illuminate\Container\Container;
 use Mini\Contract\ApplicationAware;
 
-class Application extends Container {
+class Application extends Container
+{
 
     protected $basePath;
 
@@ -13,7 +15,7 @@ class Application extends Container {
     public function __construct($basePath = "")
     {
         static::setInstance($this);
-        if(!empty($basePath)) {
+        if (!empty($basePath)) {
             $this->basePath = $basePath;
         }
         $this->registerInstance();
@@ -22,13 +24,13 @@ class Application extends Container {
     public function make($abstract, array $parameters = [])
     {
         $object = parent::make($abstract, $parameters);
-        if($object instanceof ApplicationAware) {
+        if ($object instanceof ApplicationAware) {
             $object->setApplication($this);
         }
         return $object;
     }
 
-    protected function registerInstance() 
+    protected function registerInstance()
     {
         $this->instance("path", $this->basePath());
         $this->instance("path.config", $this->configPath());
@@ -36,18 +38,19 @@ class Application extends Container {
         $this->instance("app", $this);
     }
 
-    public function basePath() 
+    public function basePath()
     {
         return $this->basePath;
     }
 
-    public function configPath() 
+    public function configPath()
     {
-        return $this->basePath."config";
+        return $this->basePath . "config";
     }
 
-    public function appPath() {
-        return $this->basePath."app";
+    public function appPath()
+    {
+        return $this->basePath . "app";
     }
 
 }

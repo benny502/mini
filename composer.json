@@ -19,7 +19,8 @@
         "symfony/http-kernel": "^4.3",
         "symfony/config": "^4.3",
         "illuminate/container": "^5.8",
-        "symfony/debug": "^4.3"
+        "symfony/debug": "^4.3",
+        "twig/twig": "^2.11"
 
     },
     "require-dev": {

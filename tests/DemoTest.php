@@ -3,10 +3,10 @@ namespace Tests;
 
 use PHPUnit\Framework\TestCase;
 
-class DemoTest extends TestCase 
+class DemoTest extends TestCase
 {
-    public function testDemo() 
+    public function testDemo()
     {
-        $this->assertEquals(1,1);
+        $this->assertEquals(1, 1);
     }
 }
