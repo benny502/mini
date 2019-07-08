@@ -7,26 +7,26 @@ use Mini\Templating\TwigLoader;
 
 class AppKernel extends Kernel
 {
-    public function getRoot()
+    public function rootPath()
     {
         return __DIR__;
     }
 
-    public function getViewPath()
+    public function viewPath()
     {
-        return $this->getRoot() . DIRECTORY_SEPARATOR . "Views";
+        return $this->rootPath() . DIRECTORY_SEPARATOR . "Views";
     }
 
-    public function getCachePath()
+    public function cachePath()
     {
-        return $this->getRoot() . DIRECTORY_SEPARATOR . "Cache";
+        return $this->app->basePath() . "cache";
     }
 
     protected function registerServices()
     {
         return [
             TemplateLoaderInterface::class => function () {
-                return new TwigLoader($this->getViewPath(), $this->getCachePath());
+                return new TwigLoader($this->viewPath(), $this->cachePath());
             },
         ];
     }

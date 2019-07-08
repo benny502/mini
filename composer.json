@@ -31,6 +31,9 @@
             "App\\": "app/",
             "Mini\\": "frame/"
         },
+        "classmap": [
+            "cache"
+        ],
         "files": [
             "frame/helpers.php"
         ]

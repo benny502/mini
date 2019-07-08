@@ -32,6 +32,6 @@ class DefaultController extends Controller
      */
     public function view() 
     {
-        return $this->render("index");
+        return $this->render("index", ["msg" => "Welcome!"]);
     }
 }
