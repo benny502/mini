@@ -1,9 +1,3 @@
 vendor/
-<<<<<<< HEAD
 cache/
 config/database.yml
-=======
-vscode/
-config/database.yml
-cache/
->>>>>>> dev

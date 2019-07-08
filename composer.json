@@ -2,6 +2,7 @@
     "name": "benny502/mini",
     "description": "mini frame",
     "type": "project",
+    "license": "MIT",
     "authors": [
         {
             "name": "benny502",
