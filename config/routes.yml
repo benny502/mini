@@ -1,0 +1,5 @@
+route1:
+  path: /
+  defaults: { _controller: 'App\Controllers\DefaultController::index', _group: web, _middleware: ~ }
+  methods: GET
+
