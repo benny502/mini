@@ -20,7 +20,7 @@ class Controller implements ApplicationAware
     public function render($name, $context = [], Response $response = null) 
     {
         if(!$this->app->has("templating")) {
-            throw LogicException("The template is not available");
+            throw new LogicException("The template is not available");
         }
 
         $templating = $this->app->make("templating");

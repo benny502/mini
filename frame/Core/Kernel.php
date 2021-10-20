@@ -9,7 +9,7 @@ use Mini\Contract\KernelInterface;
 use Mini\Core\Pipeline;
 use Mini\Router\Dispatcher;
 use Mini\Templating\TemplateLoaderInterface;
-use Symfony\Component\Debug\Debug;
+use Symfony\Component\ErrorHandler\Debug;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpKernel;
 

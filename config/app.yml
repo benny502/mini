@@ -5,4 +5,5 @@ middleware: ~
 groupMiddleware: 
   web: ~
 
-routeMiddleware: abd
+routeMiddleware: 
+  demo: App\Middleware\DemoMiddleware
