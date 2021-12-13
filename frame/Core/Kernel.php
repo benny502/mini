@@ -47,8 +47,7 @@ class Kernel implements KernelInterface, ApplicationAware
         $this->loadExceptionHandle();
         $this->loadMiddleware();
         $this->loadTemplate();
-        $request = $this->sendRequestThroughRouter($request);
-        return $this->getHttpKernel()->handle($request, $type, $catch);
+        return $this->sendRequestThroughRouter($request, $type, $catch);
     }
 
     public function getAppPath()
@@ -87,20 +86,20 @@ class Kernel implements KernelInterface, ApplicationAware
         $this->routeMiddleware = $this->configLoader->load("app.routeMiddleware") ?? [];
     }
 
-    protected function sendRequestThroughRouter($request)
+    protected function sendRequestThroughRouter($request, $type = self::MASTER_REQUEST, $catch = true)
     {
         return $this->pipline->send($request)->through($this->middleware)
-            ->then($this->dispatchToRouter());
+            ->then(function($request) use($type, $catch) {
+                return $this->dispatchToRouter($request, $type, $catch);
+            });
     }
 
-    protected function dispatchToRouter()
+    protected function dispatchToRouter($request, $type = self::MASTER_REQUEST, $catch = true)
     {
-        return function ($request) {
-            $dispatcher = $this->app->make(Dispatcher::class);
-            $dispatcher->setGroupMiddleware($this->groupMiddleware);
-            $dispatcher->setRouteMiddleware($this->routeMiddleware);
-            return $dispatcher->dispatch($request);
-        };
+        $dispatcher = $this->app->make(Dispatcher::class);
+        $dispatcher->setGroupMiddleware($this->groupMiddleware);
+        $dispatcher->setRouteMiddleware($this->routeMiddleware);
+        return $dispatcher->dispatch($request, $type, $catch);
     }
 
     protected function getHttpKernel()

@@ -1,13 +1,14 @@
 <?php
 namespace Mini\Router;
 
-use Mini\Contract\ApplicationAware;
-use Mini\Contract\ApplicationAwareTrait;
-use Mini\Contract\RouteLoaderInterface;
 use Mini\Core\Pipeline;
+use Mini\Contract\ApplicationAware;
+use Mini\Contract\RouteLoaderInterface;
+use Mini\Contract\ApplicationAwareTrait;
+use Symfony\Component\HttpKernel\HttpKernel;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext;
+use Symfony\Component\Routing\Matcher\UrlMatcher;
 
 class Dispatcher implements ApplicationAware
 {
@@ -18,6 +19,8 @@ class Dispatcher implements ApplicationAware
     protected $context;
 
     protected $pipline;
+
+    protected $middleware = [];
 
     protected $groupMiddleware = [];
 
@@ -30,13 +33,17 @@ class Dispatcher implements ApplicationAware
         $this->pipline = $pipeline;
     }
 
-    public function dispatch(Request $request)
+    public function dispatch(Request $request, $type, $catch)
     {
         $routes = $this->loader->load();
         $context = $this->context->fromRequest($request);
         $matcher = new UrlMatcher($routes, $context);
         $request->attributes->add($matcher->matchRequest($request));
-        return $this->sendThroughMiddleware($request);
+        return $this->sendThroughMiddleware($request, $type, $catch);
+    }
+
+    public function setMiddleware($middleware) {
+        $this->middleware = [$middleware];
     }
 
     public function setGroupMiddleware($groupMiddleware)
@@ -49,11 +56,11 @@ class Dispatcher implements ApplicationAware
         $this->routeMiddleware = $routeMiddleware;
     }
 
-    protected function sendThroughMiddleware($request)
+    protected function sendThroughMiddleware($request, $type, $catch)
     {
         $middleware = $this->gatheredMiddleware($request);
-        return $this->pipline->send($request)->through($middleware)->then(function ($request) {
-            return $request;
+        return $this->pipline->send($request)->through($middleware)->then(function ($request) use($type, $catch) {
+            return $this->getHttpKernel()->handle($request, $type, $catch);
         });
     }
 
@@ -61,7 +68,7 @@ class Dispatcher implements ApplicationAware
     {
         $groupMiddleware = $this->gatheredGroupMiddleware($request);
         $routeMiddleware = $this->gatheredRouteMiddleware($request);
-        return array_merge($groupMiddleware, $routeMiddleware);
+        return array_merge($this->middleware, $groupMiddleware, $routeMiddleware);
     }
 
     protected function gatheredGroupMiddleware($request)
@@ -102,5 +109,10 @@ class Dispatcher implements ApplicationAware
             throw new \RuntimeException("routeMiddleware [$key] cannot be empty");
         }
         return [$this->routeMiddleware[$key]];
+    }
+
+    protected function getHttpKernel()
+    {
+        return $this->app->make(HttpKernel::class);
     }
 }

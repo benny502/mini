@@ -10,7 +10,7 @@ class DefaultController extends Controller
 {
 
     /**
-     * @Route("/abc/{name}", name="abc", methods="GET")
+     * @Route("/abc/{name}", name="abc", methods="GET", middleware="demo")
      */
     public function index(Request $request)
     {
@@ -20,7 +20,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/demo")
+     * @Route("/demo", group="web")
      */
     public function demo()
     {

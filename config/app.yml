@@ -3,7 +3,8 @@ enviroment: dev
 middleware: ~
 
 groupMiddleware: 
-  web: ~
+  web: 
+    - App\Middleware\DemoMiddleware
 
 routeMiddleware: 
   demo: App\Middleware\DemoMiddleware
